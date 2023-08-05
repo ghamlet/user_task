@@ -1,28 +1,23 @@
-# -*- coding: utf-8 -*-
 
 import cv2
 import os
-import time
 import numpy as np
 
 
-pos = 0
+pos = 0 
 minblue, mingreen, minred, maxblue, maxgreen, maxred =0,0,0,0,0,0
 
 change_image = False
 
-dir_images = 'images'
+dir_images = 'images' 
 
 def nothing(x):
-    pass
+    ...
 
 
 def trackbar(minblue=0, mingreen=0, minred=0, maxblue=0, maxgreen=0, maxred=0):
-    """по умолчанию все значения нули, и только когда переключаешься на другое изображение 
-    значения сохраняются с прошлого трекбара """
 
     cv2.namedWindow( "result")
-
     cv2.createTrackbar('minb', 'result', minblue, 255, nothing)
     cv2.createTrackbar('ming', 'result', mingreen, 255, nothing)
     cv2.createTrackbar('minr', 'result', minred, 255, nothing)
@@ -34,11 +29,8 @@ def trackbar(minblue=0, mingreen=0, minred=0, maxblue=0, maxgreen=0, maxred=0):
     change_image = True
 
 
-
-# for file in os.listdir(dir_images):
-    
-#     img = f"images/{file}"
-#     frame_input = cv2.imread(img)
+number_of_files = len(os.listdir(dir_images))
+print(f"Всего файлов {number_of_files}")
 
 
 while True:
@@ -46,14 +38,11 @@ while True:
     if change_image == False:
         trackbar(minblue, mingreen, minred, maxblue, maxgreen, maxred) #create trackbars
         
-
-    print(pos)
     img = os.listdir(dir_images)[pos]
     frame_input = f"images/{img}"
     frame_input = cv2.imread(frame_input)
     
 
-    
     hsv = cv2.cvtColor(frame_input, cv2.COLOR_BGR2HSV)
 
     minb = cv2.getTrackbarPos('minb', 'result')
@@ -65,29 +54,42 @@ while True:
 
 
     mask = cv2.inRange(hsv,(minb,ming,minr),(maxb,maxg,maxr))
-    cv2.imshow('frame_input', frame_input)
-
+    
     result=cv2.bitwise_and(frame_input,frame_input,mask=mask)
+    
     cv2.imshow('result1', result)
+    cv2.imshow('frame_input', frame_input)
+    
+    
+    k = cv2.waitKey(1)
 
-
-
-    if cv2.waitKey(1)==ord("a"):
+    if k == ord('a'):
         pos=pos-1
-        print("back")
-        minblue, mingreen, minred, maxblue, maxgreen, maxred = minb, ming, minr, maxb, maxg, maxr
-        change_image = False
-        cv2.destroyAllWindows()
-        time.sleep(0.5)
+
+        if pos < 0:
+            pos = 0
+            print("the first file is open")
+            
+        else:
+            minblue, mingreen, minred, maxblue, maxgreen, maxred = minb, ming, minr, maxb, maxg, maxr
+            change_image = False
+            cv2.destroyAllWindows()
        
        
-    elif cv2.waitKey(1)==ord("d"):
+       
+    elif k == ord('d'):
+
         pos=pos+1
-        print("forward")
-        minblue, mingreen, minred, maxblue, maxgreen, maxred = minb, ming, minr, maxb, maxg, maxr
-        change_image = False
-        cv2.destroyAllWindows()
-        time.sleep(0.5)
+
+        if pos == number_of_files:
+            pos = number_of_files - 1
+            print("files are over")
+
+        else:
+            minblue, mingreen, minred, maxblue, maxgreen, maxred = minb, ming, minr, maxb, maxg, maxr
+            change_image = False
+            cv2.destroyAllWindows()
+       
         
         
 
