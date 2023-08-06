@@ -70,10 +70,10 @@ while True:
     color_tone_result = result[:,:,0]
     color_tone_result = np.sum(color_tone_result)
 
-    proportion = int((color_tone_result / color_tone_input) * 100)
-    #print(proportion)
+    proportion = int((color_tone_result / color_tone_input) * 1000)
+    print(proportion)
 
-    if proportion in range(5, 200):
+    if proportion in range(80, 1200):
         print("stop")
     else:
         print("turn ")
