@@ -3,13 +3,19 @@ import cv2
 import os
 import numpy as np
 
+minblue, mingreen, minred, maxblue, maxgreen, maxred = 151, 255, 0, 255, 255, 255
+
+#minblue, mingreen, minred, maxblue, maxgreen, maxred = 0,0,0,0,0,0
 
 pos = 0 
-minblue, mingreen, minred, maxblue, maxgreen, maxred =0,0,0,0,0,0
+
 
 change_image = False
 
 dir_images = 'images' 
+
+sought = [254,254,254]
+
 
 def nothing(x):
     ...
@@ -37,13 +43,15 @@ while True:
     
     if change_image == False:
         trackbar(minblue, mingreen, minred, maxblue, maxgreen, maxred) #create trackbars
+    
         
     img = os.listdir(dir_images)[pos]
     frame_input = f"images/{img}"
     frame_input = cv2.imread(frame_input)
-    
 
     hsv = cv2.cvtColor(frame_input, cv2.COLOR_BGR2HSV)
+    color_tone_input = hsv[:,:,0]
+    color_tone_input = np.sum(color_tone_input)
 
     minb = cv2.getTrackbarPos('minb', 'result')
     ming = cv2.getTrackbarPos('ming', 'result')
@@ -55,10 +63,25 @@ while True:
 
     mask = cv2.inRange(hsv,(minb,ming,minr),(maxb,maxg,maxr))
     
+
     result=cv2.bitwise_and(frame_input,frame_input,mask=mask)
-    
+
+    result = cv2.cvtColor(result, cv2.COLOR_BGR2HSV)
+    color_tone_result = result[:,:,0]
+    color_tone_result = np.sum(color_tone_result)
+
+    proportion = int((color_tone_result / color_tone_input) * 100)
+    #print(proportion)
+
+    if proportion in range(5, 200):
+        print("stop")
+    else:
+        print("turn ")
+
     cv2.imshow('result1', result)
     cv2.imshow('frame_input', frame_input)
+    cv2.imshow('mask', mask)
+    
     
     
     k = cv2.waitKey(1)
@@ -90,28 +113,11 @@ while True:
             change_image = False
             cv2.destroyAllWindows()
        
-        
-        
-
-
-        # if cv2.waitKey(1)==ord("q"):
-        #     print("exit")
-        #     break
+    
         
 
  
-    # spatialRadius = 70
-    # colorRadius = 30
-    # pyramidLevels = 3
-    # imageSegment = cv2.pyrMeanShiftFiltering(frame_input, spatialRadius, colorRadius, pyramidLevels)
-
-    
-    #cv2.imshow("MeanShift", imageSegment)
-    #cv2.imshow("frame_input", frame_input)
-    
-    #cv2.waitKey(10000)# /1000 in seconds
-    
-    # cv2.destroyAllWindows()
+ 
     
     
 
